@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=640, user-scalable=no">
+	<title>第十二届长沙车展:购票</title>
+	<script src="jquery-3.1.1.min.js"></script>
+	<style>
+		body {
+			padding: 0;
+			margin: 0;
+			position: relative;
+		}
+
+		#main-section {
+			width: 640px;
+			height: 1152px;
+			background: url(ticket-buy-bg.png) no-repeat center center;
+			position: relative;
+		}
+
+		.float-btn {
+			position: absolute;
+			cursor: pointer;
+		}
+
+		.buy-btn {
+			height: 40px;
+			width: 124px;
+			border-radius: 20px;
+		}
+
+		.cs-input {
+			border: 0px;
+			position: absolute;
+			/*background-color: rgba(255,0,0,0.6);*/
+			font-size: 20px;
+			line-height: 200%;
+		}
+
+		input#phone {
+			left: 115px;
+			top: 363px;
+			width: 410px;
+		}
+
+		input#models {
+			left: 115px;
+			top: 426px;
+			width: 410px;
+		}
+
+		input#check-code {
+			left: 115px;
+			top: 480px;
+			width: 120px;
+		}
+
+		div#get-check-code {
+			left: 395px;
+			top: 480px;
+			width: 114px;
+			height: 40px;
+			border-radius: 20px;
+
+			cursor: pointer;
+		}
+
+		#ticket-single .buy-btn.float-btn {
+			left: 380px;
+			top: 610px;
+			width: 124px;
+			border-radius: 20px;
+		}
+
+		#ticket-double .buy-btn.float-btn {
+			left: 380px;
+			top: 782px;
+			width: 124px;
+			border-radius: 20px;
+		}
+		#ticket-single .float-btn[name=number] {
+			left: 412px;
+			top: 660px;
+			border: 0px;
+			font-size: 20px;
+			width: 70px;
+			background-color: #DDDDDD;
+		}
+		#ticket-double .float-btn[name=number] {
+			left: 412px;
+			top: 832px;
+			border: 0px;
+			font-size: 20px;
+			width: 70px;
+			background-color: #DDDDDD;
+		}
+	</style>
+</head>
+<body>
+<div id="main-section">
+	<!--信息输入表单区域-->
+	<input type="text" id="phone" class="cs-input" placeholder="手机">
+	<input type="text" id="models" class="cs-input" placeholder="预购车型（非必填）">
+	<input type="text" id="check-code" class="cs-input" placeholder="验证码">
+	<div id="get-check-code" class="float-btn"></div>
+
+	<!--订票1区域-->
+	<form action="" id="ticket-single">
+		<div class="buy-btn float-btn"></div>
+		<select name="number" class="float-btn">
+			<option value="0">0张</option>
+			<option value="1">1张</option>
+			<option value="2">2张</option>
+			<option value="3">3张</option>
+			<option value="4">4张</option>
+			<option value="5">5张</option>
+			<option value="6">6张</option>
+			<option value="7">7张</option>
+			<option value="8">8张</option>
+			<option value="9">9张</option>
+			<option value="10">10张</option>
+		</select>
+	</form>
+	<!--订票2区域-->
+	<form action="" id="ticket-double">
+		<div class="buy-btn float-btn"></div>
+		<select name="number" class="float-btn">
+			<option value="0">0张</option>
+			<option value="1">1张</option>
+			<option value="2">2张</option>
+			<option value="3">3张</option>
+			<option value="4">4张</option>
+			<option value="5">5张</option>
+			<option value="6">6张</option>
+			<option value="7">7张</option>
+			<option value="8">8张</option>
+			<option value="9">9张</option>
+			<option value="10">10张</option>
+		</select>
+	</form>
+</div>
+<script>
+	//发送验证码的处理
+	$('#get-check-code').click(function () {
+		if ($('#phone').val().match(/1[0-9]{10}/) == $('#phone').val()) {
+			//检查手机号码符合要求，发送验证码
+			//发送验证码
+			$.getJSON('http://www.xiaolvyou.com.cn/znhz/front/huodong_sendSmsConfirm.action?jsoncallback=?&phone='+$('#phone').val(), function(result){
+				if (result.status == 'true'){
+					alert('验证码已发送');
+				}else{
+					alert('验证码发送失败');
+				}
+			});
+		} else {
+			alert('请填写好您的手机号码');
+		}
+	});
+
+	//点击购买按钮的处理
+	$('.buy-btn').click(function () {
+		var errMsg = '';
+		//1. 首先判断手机号码是否存在
+		if ($('#phone').val().match(/1[0-9]{10}/) != $('#phone').val()){
+			errMsg += '手机号码不存在或者不规范\n';
+		}
+		//2. 其次判断验证码是否存在
+		if ($('#check-code').val()==''){
+			errMsg += '验证码尚未填写\n';
+		}
+		//3. 检查购买票数是否正确
+		var _ticketNum = $(this).parent().find('.float-btn[name=number]').val();
+		if(_ticketNum==0 || _ticketNum<0 || _ticketNum>10){
+			errMsg += '票数错误，请重新设置购买数量\n'
+		}
+
+		//4. 如果有错误信息，打印出错误信息
+		if (errMsg==''){
+			//4. TODO:检查验证码是否正确
+			//5. TODO:提交购买表单
+		}else{
+			alert(errMsg);
+		}
+	});
+</script>
+</body>
+</html>

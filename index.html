@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=640, user-scalable=no">
+	<title>第十二届长沙车展</title>
+	<style>
+		body {
+			padding:0;
+			margin:0;
+		}
+		#main-section {
+			width:640px;
+			height:1149px;
+			background: url(index-bg.png) no-repeat center center;
+			position:relative;
+		}
+
+		.float-btn {
+			width: 170px;
+			height: 170px;
+			position: absolute;
+			cursor: pointer;
+			border-radius: 50%;
+		}
+		#buy-btn {
+			left: 120px;
+			top: 654px;
+		}
+		#search-btn {
+			left: 350px;
+			top: 654px;
+		}
+	</style>
+</head>
+<body>
+<div id="main-section">
+	<!--开始购票-->
+	<a href="ticket-buy.html" target="_self">
+		<div id="buy-btn" class="float-btn"></div>
+	</a>
+	<!--查询电子票-->
+	<a href="ticket-show.html" target="_self">
+		<div id="search-btn" class="float-btn"></div>
+	</a>
+</div>
+</body>
+</html>

@@ -2,9 +2,123 @@
 <html lang="zh-CN">
 <head>
 	<meta charset="UTF-8">
-	<title>第十二届长沙车展:抽奖</title>
+	<title>抽奖</title>
+	<meta name="viewport" content="width=640, user-scalable=no">
+	<script src="jquery-3.1.1.min.js"></script>
+
+	<style>
+		body {
+			padding: 0;
+			margin: 0;
+		}
+
+		#main-section {
+			width: 640px;
+			height: 1151px;
+			background: url(common-bg.png) no-repeat center center;
+			position: relative;
+		}
+
+		.item-unit,
+		.start-button {
+			width: 178px;
+			height: 178px;
+			display: inline-block;
+			margin-left: 21px;
+			margin-top: 21px;
+			border: 1px solid #FFF;
+
+			background-color: #FFF;
+		}
+
+		.item-unit.active {
+			width: 178px;
+			height: 178px;
+			display: inline-block;
+			margin-left: 21px;
+			margin-top: 21px;
+			border: 1px solid #F00;
+		}
+	</style>
 </head>
 <body>
+<div id="main-section">
+	<div class="item-unit in0"></div>
+	<div class="item-unit in1"></div>
+	<div class="item-unit in2"></div>
+	<div class="item-unit in7"></div>
+	<div class="start-button"></div>
+	<div class="item-unit in3"></div>
+	<div class="item-unit in6"></div>
+	<div class="item-unit in5"></div>
+	<div class="item-unit in4"></div>
+
+</div>
+<script>
+	/**
+	 * 绘制抽奖UI
+	 * @type {[*]}
+	 * @private
+	 */
+		//测试数据
+	var _tempItemList = [
+			'http://cdn.steamstatic.com.8686c.com/steam/apps/455480/capsule_184x69.jpg',
+			'http://cdn.steamstatic.com.8686c.com/steam/apps/482440/capsule_184x69.jpg',
+			'http://cdn.steamstatic.com.8686c.com/steam/apps/529240/capsule_184x69.jpg',
+			'http://cdn.steamstatic.com.8686c.com/steam/apps/306000/capsule_184x69.jpg',
+			'http://cdn.steamstatic.com.8686c.com/steam/apps/528820/capsule_184x69.jpg',
+			'http://cdn.steamstatic.com.8686c.com/steam/apps/505730/capsule_184x69.jpg',
+			'http://cdn.steamstatic.com.8686c.com/steam/apps/500180/capsule_184x69.jpg',
+			'http://cdn.steamstatic.com.8686c.com/steam/apps/115800/capsule_184x69.jpg',
+			'http://cdn.steamstatic.com.8686c.com/steam/apps/381210/capsule_184x69.jpg'
+		];
+	//从接口读入奖品
+	//填充奖品到item-unit
+	for (var i = 0; i < 9; i++) {
+		$('.in' + i).css({
+			'background':      'url(' + _tempItemList[i] + ') no-repeat center center',
+			'background-size': 'cover'
+		});
+	}
+
+
+	/**
+	 * 执行抽奖动作
+	 */
+	//点击抽奖后的时间
+	var overFlag = false;
+	var currentPoint = -1;
+	var countPoint   = 0;
+	var _turnPoint   = 16;	//预先多转的点数量
+	var _bounsPoint  = 1+parseInt(Math.random() * 7);	//获奖位置
+	console.log('_bounsPoint:', _bounsPoint);
+	$('.start-button').click(function () {
+		if(overFlag){
+			alert('您已经抽过奖了');
+			return false;
+		}
+		//转圈
+		var turnID = setInterval(function () {
+			currentPoint++;
+			countPoint++;
+			//超过8则转回1
+			if (currentPoint > 7) {
+				currentPoint = 0;
+			}
+			console.log('currentPoint:',currentPoint,'countPoint:',countPoint);
+			//超过总数则停止
+			if (countPoint == (_turnPoint + _bounsPoint)) {
+				clearInterval(turnID);
+				overFlag = true;
+			}
+
+			//绘制当前位置
+			$('.item-unit.active').removeClass('active');
+			$('.item-unit.in' + currentPoint).addClass('active');
+
+		}, 100);
+	});
+</script>
 
 </body>
 </html>

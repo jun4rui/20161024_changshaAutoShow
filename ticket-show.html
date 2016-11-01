@@ -88,7 +88,7 @@
 			background-size: cover;
 			position: absolute;
 			left: 93px;
-			top: 360px;
+			top: 420px;
 
 			display:none;
 		}
@@ -99,12 +99,20 @@
 
 			display:none;
 		}
-		#lottery a {
+		#lottery a,
+		#thanks {
 			margin: 0 auto;
 			text-align: center;
 			color: #FFF;
 			font-size: 2em;
 			text-decoration: none;
+		}
+		#thanks {
+			position: absolute;
+			width: 100%;
+			top: 350px;
+			left: 0;
+			display:none;
 		}
 	</style>
 </head>
@@ -116,10 +124,11 @@
 		<div id="get-QR-code" class="float-btn"></div>
 	</div>
 	<!--二维码展示区域-->
+	<div id="thanks">感谢您的购买，请您妥善保存好二维码</div>
 	<div id="QR-code"></div>
 	<!--抽奖区域-->
 	<div id="lottery">
-		<a href="#">点击这里前往抽奖区</a>
+		<a href="lottery.html" target="_self">点击这里前往抽奖区</a>
 	</div>
 </div>
 
@@ -130,13 +139,17 @@
 		if ($('#phone').val().match(/1[0-9]{10}/) != $('#phone').val()){
 			alert('手机格式错误，请检查');
 		}else{
-			//请求获取二维码 TODO:二维码暂时有错误，wait曹熙解决//15874991816
+			//请求获取二维码 //5874991816
 			$.getJSON('http://www.xiaolvyou.com.cn//znhz/front/huodong_queryOrderDetail.action?phone='+$('#phone').val(), function(result){
 				console.log(result);
 				//如果购买产品结果集是空的，则不显示抽奖和二维码
 				if (result.orderList.length>0){
 					//把二维码显示出来
-					$('#QR-code').attr({'background': 'url('+result.confirm_url+') no-repeat center center;'}).show();
+					$('#QR-code').css({
+						'background': 'url(http://www.xiaolvyou.com.cn/znhz/front/qr_codeImage.action?code_url='+result.confirm_url+') no-repeat center center',
+						'background-size':'cover'
+					}).show();
+					$('#thanks').show();
 					//把所有产品循环显示出来
 					result.orderList.map(function(unit){
 						/*

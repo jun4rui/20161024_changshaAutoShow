@@ -2,121 +2,218 @@
 <html lang="zh-CN">
 <head>
 	<meta charset="UTF-8">
-	<title>抽奖</title>
+	<title>第十二届长沙车展:检查电子票</title>
 	<meta name="viewport" content="width=640, user-scalable=no">
 	<script src="jquery-3.1.1.min.js"></script>
+	<script>
+		//查询url参数函数
+		//有则返回参数列表list
+		//没有则返回空串
+		function getParameters(inUrl/*完整的URL字符串*/) {
+			//url中有?号才继续
+			if (inUrl.indexOf('\?') >= 0) {
+				return inUrl.substring(inUrl.indexOf('?') + 1).split('&');    //有则返回所有参数的list
+			} else {
+				return '';  //没有则返回''
+			}
+		}
 
+		//获得url中某个参数的值
+		//有则返回参数的值
+		//没有则返回空串
+		function getParameterValue(inUrl/*输入Url*/, inName/*参数名*/) {
+			var paraList = getParameters(inUrl);
+			for (var i = 0; i < paraList.length; i++) {
+				//如果没有'='则跳过
+				if (paraList[i].indexOf('=') < 0) {
+					continue;
+				}
+				//如果参数名=inName则返回参数值
+				var tempVal = paraList[i].split('=');
+				if (tempVal[0] == inName) {
+					return tempVal[1];
+				}
+			}
+			return '';
+		}
+	</script>
 	<style>
 		body {
 			padding: 0;
 			margin: 0;
+			background: #0071BF;
+			padding-bottom:20px;
 		}
 
 		#main-section {
 			width: 640px;
 			height: 1151px;
-			background: url(common-bg.png) no-repeat center center;
 			position: relative;
+			padding-top: 20px;
 		}
 
-		.item-unit,
-		.start-button {
-			width: 178px;
-			height: 178px;
-			display: inline-block;
-			margin-left: 21px;
-			margin-top: 21px;
-			border: 1px solid #FFF;
-
-			background-color: #FFF;
+		.ticket {
+			width: 455px;
+			height: 150px;
+			margin: 0 auto 20px auto;
+			position: relative;
+			background: #FFF;
 		}
 
-		.item-unit.active {
-			width: 178px;
-			height: 178px;
-			display: inline-block;
-			margin-left: 21px;
-			margin-top: 21px;
-			border: 1px solid #F00;
+		.ticket > input[type="checkbox"] {
+			position: absolute;
+			right: 0;
+			top: 0;
+			/*
+			width: 3em;
+			height: 3em;
+			*/
+			width: 0;
+			height:0;
+			overflow:hidden;
+		}
+
+		.ticket-time {
+			position: absolute;
+			right: 172px;
+			bottom: 67px;
+			text-shadow: 1px 1px 2px #F7C07E;
+			color: #EF8200;
+		}
+
+		.ticket-number {
+			position: absolute;
+			right: 0;
+			bottom: 0;
+			font-size: 1.5em;
+			border: 1px solid #00A0E8;
+			background-color: #00A0E8;
+			color: #FFF;
+			padding: 0 0.2em;
+		}
+
+		.status {
+			position: absolute;
+			right: 55px;
+			top: 7px;
+		}
+
+		.single-ticket {
+			background: url(ticket-single.png) no-repeat center center;
+			background-size: cover;
+		}
+
+		.double-ticket {
+			background: url(ticket-double.png) no-repeat center center;
+			background-size: cover;
+		}
+		div#submit-btn {
+			position: fixed;
+			width: 100%;
+			line-height: 50px;
+			bottom: 0;
+			text-align: center;
+			font-size: 24px;
+			background-color: #ebb10c;
+			border-top: 1px solid #c8ab11;
 		}
 	</style>
 </head>
 <body>
 <div id="main-section">
-	<div class="item-unit in0"></div>
-	<div class="item-unit in1"></div>
-	<div class="item-unit in2"></div>
-	<div class="item-unit in7"></div>
-	<div class="start-button"></div>
-	<div class="item-unit in3"></div>
-	<div class="item-unit in6"></div>
-	<div class="item-unit in5"></div>
-	<div class="item-unit in4"></div>
-
+	<!--
+	单人票
+	<div class="single-ticket ticket">
+		<input type="checkbox" name="" id="1211">
+		<div class="ticket-time">购买于 2016-09-10 12:12:12</div>
+		<div class="ticket-number">3张</div>
+		<div class="status">已付款</div>
+	</div>
+	&lt;!&ndash;双人票&ndash;&gt;
+	<div class="double-ticket ticket">
+		<input type="checkbox" name="" id="1233">
+		<div class="ticket-time">购买于 2016-09-10 12:12:12</div>
+		<div class="ticket-number">3张</div>
+		<div class="status">已付款</div>
+	</div>
+	-->
 </div>
+<div id="submit-btn">
+	提交
+</div>
+
 <script>
-	/**
-	 * 绘制抽奖UI
-	 */
-		//测试数据
-	var _tempItemList = [
-			'http://cdn.steamstatic.com.8686c.com/steam/apps/455480/capsule_184x69.jpg',
-			'http://cdn.steamstatic.com.8686c.com/steam/apps/482440/capsule_184x69.jpg',
-			'http://cdn.steamstatic.com.8686c.com/steam/apps/529240/capsule_184x69.jpg',
-			'http://cdn.steamstatic.com.8686c.com/steam/apps/306000/capsule_184x69.jpg',
-			'http://cdn.steamstatic.com.8686c.com/steam/apps/528820/capsule_184x69.jpg',
-			'http://cdn.steamstatic.com.8686c.com/steam/apps/505730/capsule_184x69.jpg',
-			'http://cdn.steamstatic.com.8686c.com/steam/apps/500180/capsule_184x69.jpg',
-			'http://cdn.steamstatic.com.8686c.com/steam/apps/115800/capsule_184x69.jpg',
-			'http://cdn.steamstatic.com.8686c.com/steam/apps/381210/capsule_184x69.jpg'
-		];
-	//从接口读入奖品
-	//填充奖品到item-unit
-	for (var i = 0; i < 9; i++) {
-		$('.in' + i).css({
-			'background':      'url(' + _tempItemList[i] + ') no-repeat center center',
-			'background-size': 'cover'
-		});
+	//TODO: 要重新安排下UI要展示用户获得了什么奖品
+	//检查localStorage中是否保存所需的数据
+	//if (localStorage.getItem('checkerFlag') == 1) {
+	if (true) {
+		var _phone = getParameterValue(window.location.href, 'phone');
+		//检查是否有phone电话号码参数
+		if (_phone == "") {
+			alert('手机号码不正确或没有输入，请检查后重新扫码。');
+		} else {
+			//检查手机格式
+			if (_phone.match(/1[0-9]{10}/) != _phone) {
+				alert('手机格式错误，请检查');
+			} else {
+				//有参数则调用接口查询数据
+				//请求获取二维码 TODO:二维码暂时有错误，wait曹熙解决//15874991816
+				$.getJSON('http://www.xiaolvyou.com.cn/znhz/front/huodong_queryOrderDetail.action?phone=' + _phone, function (result) {
+					console.log(result);
+					//如果购买产品结果集是空的，则不显示抽奖和二维码
+					if (result.orderList.length > 0) {
+						//把所有产品循环显示出来
+						result.orderList.map(function (unit) {
+							/*
+							 miaoshaname 产品名称
+							 miaoshapro_id 产品类型ID
+							 mark 预购车型
+							 fraction 价格
+							 dispatchtype 数量
+							 phone 手机号码
+							 paystatedes 支付状态
+							 miaoshatime 创建时间
+							 checktdate 更新时间
+							 */
+							console.log(/*类型*/unit.miaoshaname,unit.miaoshapro_id, /*时间*/unit.miaoshatime, /*账单ID*/unit.sys_show_order_id, /*对应手机号码*/unit.phone, /*状态*/unit.paystatedes, /*数量*/unit.dispatchtype);
+							//TODO: 输出到屏幕上
+							var _type = '';
+							if (unit.miaoshapro_id == '584') _type = 'single-ticket';
+							if (unit.miaoshapro_id == '585') _type = 'double-ticket';
+							$('#main-section').append('	<div class="'+_type+' ticket"> <input type="checkbox" name="" id="' + unit.sys_show_order_id + '" checked="checked"> <div class="ticket-time">购买于 ' + unit.miaoshatime + '</div> <div class="ticket-number">' + unit.dispatchtype + '张</div> <div class="status">' + unit.paystatedes + '</div> </div>');
+						});
+					} else {
+						alert('您还没有购买门票。');
+					}
+
+				});
+			}
+		}
+	} else {
+		alert('您尚未获得验票资格，请联系相关人员。');
 	}
 
 
-	/**
-	 * 执行抽奖动作
-	 */
-	//点击抽奖后的时间
-	var overFlag = false;
-	var currentPoint = -1;
-	var countPoint   = 0;
-	var _turnPoint   = 16;	//预先多转的点数量
-	var _bounsPoint  = 1+parseInt(Math.random() * 7);	//获奖位置
-	console.log('_bounsPoint:', _bounsPoint);
-	$('.start-button').click(function () {
-		if(overFlag){
-			alert('您已经抽过奖了');
-			return false;
-		}
-		//转圈
-		var turnID = setInterval(function () {
-			currentPoint++;
-			countPoint++;
-			//超过8则转回1
-			if (currentPoint > 7) {
-				currentPoint = 0;
-			}
-			console.log('currentPoint:',currentPoint,'countPoint:',countPoint);
-			//超过总数则停止
-			if (countPoint == (_turnPoint + _bounsPoint)) {
-				clearInterval(turnID);
-				overFlag = true;
-			}
+	//点击查票按钮，将选择的票据划成已使用状态
+	//改变：曹熙要一次全部提交不用单个选择了
+	$('#submit-btn').click(function(){
+		var _tempList = [];
+		var _idList = '';
+		$(".ticket>input[type='checkbox']").each(function () {
+			console.log($(this).attr('id')+":"+$(this).prop('checked'));
+			if ($(this).prop('checked')){
 
-			//绘制当前位置
-			$('.item-unit.active').removeClass('active');
-			$('.item-unit.in' + currentPoint).addClass('active');
-
-		}, 100);
+				_tempList.push($(this).attr('id'));
+			}
+		});
+		_idList = _tempList.join(',');
+		alert(_idList);
+		//发送给接口
+		console.log('http://www.xiaolvyou.com.cn/znhz/front/huodong_updateOrderPayState.action?trade_no_arr='+_idList);
+		$.getJSON('http://www.xiaolvyou.com.cn/znhz/front/huodong_updateOrderPayState.action?trade_no_arr='+_idList,function(result){
+			console.log(result);
+		});
 	});
 </script>
-
 </body>
 </html>

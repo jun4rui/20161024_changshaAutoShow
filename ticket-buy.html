@@ -15,7 +15,7 @@
 		#main-section {
 			width: 640px;
 			height: 1152px;
-			background: url(ticket-buy-bg.png) no-repeat center center;
+			background: url(ticket-buy-bg.jpg) no-repeat center center;
 			position: relative;
 		}
 
@@ -79,21 +79,23 @@
 			width: 124px;
 			border-radius: 20px;
 		}
-		#ticket-single .float-btn[name=number] {
+
+		#ticket-single .float-btn[name=quantity] {
 			left: 412px;
 			top: 660px;
 			border: 0px;
 			font-size: 20px;
 			width: 70px;
-			background-color: #DDDDDD;
+			background-color: #DDD;
 		}
-		#ticket-double .float-btn[name=number] {
+
+		#ticket-double .float-btn[name=quantity] {
 			left: 412px;
 			top: 832px;
 			border: 0px;
 			font-size: 20px;
 			width: 70px;
-			background-color: #DDDDDD;
+			background-color: #DDD;
 		}
 	</style>
 </head>
@@ -106,10 +108,12 @@
 	<div id="get-check-code" class="float-btn"></div>
 
 	<!--订票1区域-->
-	<form action="" id="ticket-single">
-		<div class="buy-btn float-btn"></div>
-		<select name="number" class="float-btn">
-			<option value="0">0张</option>
+	<form action="http://www.xiaolvyou.com.cn/znhz/front/huodong_addHuoDongOrder.action" id="ticket-single">
+		<input type="hidden" name="miaoshaprp_id" value="584">
+		<input type="hidden" name="phone" value="">
+		<input type="hidden" name="remark" value="">
+		<div class="buy-btn float-btn" fid="ticket-single"></div>
+		<select name="quantity" class="float-btn">
 			<option value="1">1张</option>
 			<option value="2">2张</option>
 			<option value="3">3张</option>
@@ -123,10 +127,12 @@
 		</select>
 	</form>
 	<!--订票2区域-->
-	<form action="" id="ticket-double">
-		<div class="buy-btn float-btn"></div>
-		<select name="number" class="float-btn">
-			<option value="0">0张</option>
+	<form action="http://www.xiaolvyou.com.cn/znhz/front/huodong_addHuoDongOrder.action" id="ticket-double">
+		<input type="hidden" name="miaoshaprp_id" value="585">
+		<input type="hidden" name="phone" value="">
+		<input type="hidden" name="remark" value="">
+		<div class="buy-btn float-btn" fid="ticket-double"></div>
+		<select name="quantity" class="float-btn">
 			<option value="1">1张</option>
 			<option value="2">2张</option>
 			<option value="3">3张</option>
@@ -146,10 +152,10 @@
 		if ($('#phone').val().match(/1[0-9]{10}/) == $('#phone').val()) {
 			//检查手机号码符合要求，发送验证码
 			//发送验证码
-			$.getJSON('http://www.xiaolvyou.com.cn/znhz/front/huodong_sendSmsConfirm.action?jsoncallback=?&phone='+$('#phone').val(), function(result){
-				if (result.status == 'true'){
+			$.getJSON('http://www.xiaolvyou.com.cn/znhz/front/huodong_sendSmsConfirm.action?jsoncallback=?&phone=' + $('#phone').val(), function (result) {
+				if (result.status == true) {
 					alert('验证码已发送');
-				}else{
+				} else {
 					alert('验证码发送失败');
 				}
 			});
@@ -162,24 +168,42 @@
 	$('.buy-btn').click(function () {
 		var errMsg = '';
 		//1. 首先判断手机号码是否存在
-		if ($('#phone').val().match(/1[0-9]{10}/) != $('#phone').val()){
+		if ($('#phone').val().match(/1[0-9]{10}/) != $('#phone').val()) {
 			errMsg += '手机号码不存在或者不规范\n';
 		}
 		//2. 其次判断验证码是否存在
-		if ($('#check-code').val()==''){
+		if ($('#check-code').val() == '') {
 			errMsg += '验证码尚未填写\n';
 		}
 		//3. 检查购买票数是否正确
-		var _ticketNum = $(this).parent().find('.float-btn[name=number]').val();
-		if(_ticketNum==0 || _ticketNum<0 || _ticketNum>10){
+		var _ticketNum = $(this).parent().find('.float-btn[name=quantity]').val();
+		if (_ticketNum == 0 || _ticketNum < 0 || _ticketNum > 10) {
 			errMsg += '票数错误，请重新设置购买数量\n'
 		}
 
 		//4. 如果有错误信息，打印出错误信息
-		if (errMsg==''){
-			//4. TODO:检查验证码是否正确
-			//5. TODO:提交购买表单
-		}else{
+		// 双人票只能买一次
+		if (errMsg == '') {
+			//4. 检查验证码是否正确
+			//- 确认确认码 http://localhost:8080/znhz/front/huodong_getSmsConfirm.action   参数  vaildcode 确认码  phone 手机
+			//- 返回 ： status   大于 0 成功
+			$.getJSON('http://www.xiaolvyou.com.cn/znhz/front/huodong_getSmsConfirm.action?vaildcode=' + $('#check-code').val() + '&phone=' + $('#phone').val(), function (result) {
+				console.log(result);
+				if (result.status > 0) {
+					//验证码验证通过
+					//把手机号码和车型传给表单
+					$('input[name=phone]').val($('#phone').val());
+					$('input[name=remark]').val($('#models').val());
+					console.log($('input[name=phone]').val(),$('input[name=remark]').val());
+
+					//5. TODO:提交购买表单
+					console.log('#'+$(this).attr('fid'))
+					$('#'+$(this).attr('fid')).submit();
+				} else {
+					alert('验证码错误！购买失败');
+				}
+			}.bind(this));
+		} else {
 			alert(errMsg);
 		}
 	});

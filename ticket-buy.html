@@ -40,29 +40,28 @@
 
 		input#phone {
 			left: 115px;
-			top: 363px;
+			top: 413px;
 			width: 410px;
 		}
 
 		input#models {
 			left: 115px;
-			top: 426px;
+			top: 477px;
 			width: 410px;
 		}
 
 		input#check-code {
 			left: 115px;
-			top: 480px;
+			top: 537px;
 			width: 120px;
 		}
 
 		div#get-check-code {
 			left: 395px;
-			top: 480px;
+			top: 538px;
 			width: 114px;
 			height: 40px;
 			border-radius: 20px;
-
 			cursor: pointer;
 		}
 
@@ -81,21 +80,29 @@
 		}
 
 		#ticket-single .float-btn[name=quantity] {
-			left: 412px;
-			top: 660px;
+			left: 389px;
+			top: 713px;
 			border: 0px;
+			direction:rtl;
 			font-size: 20px;
-			width: 70px;
-			background-color: #DDD;
+			width: 110px;
+			height: 40px;
+			background-color: #0367b3;
+			border: 1px solid #73afdc;
+			color: #FFF;
 		}
 
 		#ticket-double .float-btn[name=quantity] {
-			left: 412px;
-			top: 832px;
+			left: 389px;
+			top: 885px;
 			border: 0px;
+			direction:rtl;
 			font-size: 20px;
-			width: 70px;
-			background-color: #DDD;
+			width: 110px;
+			height: 40px;
+			background-color: #0367b3;
+			border: 1px solid #73afdc;
+			color: #FFF;
 		}
 	</style>
 </head>
@@ -105,7 +112,7 @@
 	<input type="text" id="phone" class="cs-input" placeholder="手机">
 	<input type="text" id="models" class="cs-input" placeholder="预购车型（非必填）">
 	<input type="text" id="check-code" class="cs-input" placeholder="验证码">
-	<div id="get-check-code" class="float-btn"></div>
+	<div id="get-check-code" class="float-btn" countdown="0"></div>
 
 	<!--订票1区域-->
 	<form action="http://www.xiaolvyou.com.cn/znhz/front/huodong_addHuoDongOrder.action" id="ticket-single">
@@ -149,8 +156,14 @@
 <script>
 	//发送验证码的处理
 	$('#get-check-code').click(function () {
+		var _countdown = parseInt($('#get-check-code').attr('countdown'));
+		if (_countdown>0){
+			alert('请不要频繁发送验证码，等待'+_countdown+'秒后再发送');
+			return false;
+		}
 		if ($('#phone').val().match(/1[0-9]{10}/) == $('#phone').val()) {
 			//检查手机号码符合要求，发送验证码
+
 			//发送验证码
 			$.getJSON('http://www.xiaolvyou.com.cn/znhz/front/huodong_sendSmsConfirm.action?jsoncallback=?&phone=' + $('#phone').val(), function (result) {
 				if (result.status == true) {
@@ -159,6 +172,17 @@
 					alert('验证码发送失败');
 				}
 			});
+
+			//重发验证码倒计时
+			$('#get-check-code').attr('countdown',60);
+			var doCountdown = setInterval(function(){
+				console.log(doCountdown, $('#get-check-code').attr('countdown'));
+				$('#get-check-code').attr('countdown', parseInt($('#get-check-code').attr('countdown'))-1);
+				if (parseInt($('#get-check-code').attr('countdown'))<0){
+					clearInterval(doCountdown);
+				}
+			},1000);
+
 		} else {
 			alert('请填写好您的手机号码');
 		}
@@ -196,7 +220,7 @@
 					$('input[name=remark]').val($('#models').val());
 					console.log($('input[name=phone]').val(),$('input[name=remark]').val());
 
-					//5. TODO:提交购买表单
+					//5.提交购买表单
 					console.log('#'+$(this).attr('fid'))
 					$('#'+$(this).attr('fid')).submit();
 				} else {

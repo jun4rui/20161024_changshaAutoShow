@@ -86,7 +86,7 @@
 			right: 0;
 			bottom: 0;
 			font-size: 1.5em;
-			border: 1px solid #00A0E8;
+			/*border: 1px solid #00A0E8;*/
 			background-color: #00A0E8;
 			color: #FFF;
 			padding: 0 0.2em;
@@ -94,8 +94,13 @@
 
 		.status {
 			position: absolute;
-			right: 55px;
-			top: 7px;
+			right: 50px;
+			bottom: 0px;
+			background-color: #00a0e8;
+			color: #ffffff;
+			font-size: 1.5em;
+			/* padding: 0 7px; */
+			padding: 0 0.2em;
 		}
 
 		.single-ticket {
@@ -117,12 +122,25 @@
 			bottom: 0;
 			text-align: center;
 			font-size: 24px;
-			background-color: #ebb10c;
-			border-top: 1px solid #c8ab11;
+			color: #ffffff;
+			background-color: #0095ff;
+			border-color: #07c;
+			box-shadow: inset 0 1px 0 #66bfff;
+			border: 1px solid transparent;
+			border-radius: 2px;
+		}
+		div#phone {
+			text-align: center;
+			color: #FFF;
+			font-size: 30px;
+			line-height: 200%;
 		}
 	</style>
 </head>
 <body>
+<div id="phone">
+	用户手机：<span></span>
+</div>
 <div id="main-section">
 	<!--
 	单人票
@@ -150,47 +168,44 @@
 	//检查localStorage中是否保存所需的数据
 	//if (localStorage.getItem('checkerFlag') == 1) {
 	if (true) {
-		var _phone = getParameterValue(window.location.href, 'phone');
+		var _trade_no = getParameterValue(window.location.href, 'trade_no');
 		//检查是否有phone电话号码参数
-		if (_phone == "") {
+		if (_trade_no == "") {
 			alert('手机号码不正确或没有输入，请检查后重新扫码。');
 		} else {
-			//检查手机格式
-			if (_phone.match(/1[0-9]{10}/) != _phone) {
-				alert('手机格式错误，请检查');
-			} else {
-				//有参数则调用接口查询数据
-				//请求获取二维码 TODO:二维码暂时有错误，wait曹熙解决//15874991816
-				$.getJSON('http://www.xiaolvyou.com.cn/znhz/front/huodong_queryOrderDetail.action?phone=' + _phone, function (result) {
-					console.log(result);
-					//如果购买产品结果集是空的，则不显示抽奖和二维码
-					if (result.orderList.length > 0) {
-						//把所有产品循环显示出来
-						result.orderList.map(function (unit) {
-							/*
-							 miaoshaname 产品名称
-							 miaoshapro_id 产品类型ID
-							 mark 预购车型
-							 fraction 价格
-							 dispatchtype 数量
-							 phone 手机号码
-							 paystatedes 支付状态
-							 miaoshatime 创建时间
-							 checktdate 更新时间
-							 */
-							console.log(/*类型*/unit.miaoshaname,unit.miaoshapro_id, /*时间*/unit.miaoshatime, /*账单ID*/unit.sys_show_order_id, /*对应手机号码*/unit.phone, /*状态*/unit.paystatedes, /*数量*/unit.dispatchtype);
-							//TODO: 输出到屏幕上
-							var _type = '';
-							if (unit.miaoshapro_id == '584') _type = 'single-ticket';
-							if (unit.miaoshapro_id == '585') _type = 'double-ticket';
-							$('#main-section').append('	<div class="'+_type+' ticket"> <input type="checkbox" name="" id="' + unit.sys_show_order_id + '" checked="checked"> <div class="ticket-time">购买于 ' + unit.miaoshatime + '</div> <div class="ticket-number">' + unit.dispatchtype + '张</div> <div class="status">' + unit.paystatedes + '</div> </div>');
-						});
-					} else {
-						alert('您还没有购买门票。');
-					}
+			//填写#phone
+			$('#phone>span').text(_trade_no);
+			//有参数则调用接口查询数据
+			//请求获取二维码 //15874991816
+			$.getJSON('http://www.xiaolvyou.com.cn/znhz/front/huodong_queryOrderDetail.action?phone=' + _phone, function (result) {
+				console.log(result);
+				//如果购买产品结果集是空的，则不显示抽奖和二维码
+				if (result.orderList.length > 0) {
+					//把所有产品循环显示出来
+					result.orderList.map(function (unit) {
+						/*
+						 miaoshaname 产品名称
+						 miaoshapro_id 产品类型ID
+						 mark 预购车型
+						 fraction 价格
+						 dispatchtype 数量
+						 phone 手机号码
+						 paystatedes 支付状态
+						 miaoshatime 创建时间
+						 checktdate 更新时间
+						 */
+						console.log(/*类型*/unit.miaoshaname,unit.miaoshapro_id, /*时间*/unit.miaoshatime, /*账单ID*/unit.sys_show_order_id, /*对应手机号码*/unit.phone, /*状态*/unit.paystatedes, /*数量*/unit.dispatchtype);
+						//输出到屏幕上
+						var _type = '';
+						if (unit.miaoshapro_id == '584') _type = 'single-ticket';
+						if (unit.miaoshapro_id == '585') _type = 'double-ticket';
+						$('#main-section').append('	<div class="'+_type+' ticket"> <input type="checkbox" name="" id="' + unit.sys_show_order_id + '" checked="checked"> <div class="ticket-time">购买于 ' + unit.miaoshatime + '</div> <div class="ticket-number">' + unit.dispatchtype + '张</div> <div class="status">' + unit.paystatedes + '</div> </div>');
+					});
+				} else {
+					alert('您还没有购买门票。');
+				}
 
-				});
-			}
+			});
 		}
 	} else {
 		alert('您尚未获得验票资格，请联系相关人员。');
@@ -215,6 +230,7 @@
 		console.log('http://www.xiaolvyou.com.cn/znhz/front/huodong_updateOrderPayState.action?trade_no_arr='+_idList);
 		$.getJSON('http://www.xiaolvyou.com.cn/znhz/front/huodong_updateOrderPayState.action?trade_no_arr='+_idList,function(result){
 			console.log(result);
+			alert('已确定'+result.status+'张票');
 		});
 	});
 </script>

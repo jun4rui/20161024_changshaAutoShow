@@ -5,7 +5,38 @@
 	<title>抽奖</title>
 	<meta name="viewport" content="width=640, user-scalable=no">
 	<script src="jquery-3.1.1.min.js"></script>
+	<script>
+		//查询url参数函数
+		//有则返回参数列表list
+		//没有则返回空串
+		function getParameters(inUrl/*完整的URL字符串*/) {
+			//url中有?号才继续
+			if (inUrl.indexOf('\?') >= 0) {
+				return inUrl.substring(inUrl.indexOf('?') + 1).split('&');    //有则返回所有参数的list
+			} else {
+				return '';  //没有则返回''
+			}
+		}
 
+		//获得url中某个参数的值
+		//有则返回参数的值
+		//没有则返回空串
+		function getParameterValue(inUrl/*输入Url*/, inName/*参数名*/) {
+			var paraList = getParameters(inUrl);
+			for (var i = 0; i < paraList.length; i++) {
+				//如果没有'='则跳过
+				if (paraList[i].indexOf('=') < 0) {
+					continue;
+				}
+				//如果参数名=inName则返回参数值
+				var tempVal = paraList[i].split('=');
+				if (tempVal[0] == inName) {
+					return tempVal[1];
+				}
+			}
+			return '';
+		}
+	</script>
 	<style>
 		body {
 			padding: 0;
@@ -15,86 +46,134 @@
 		#main-section {
 			width: 640px;
 			height: 1151px;
-			background: url(common-bg.png) no-repeat center center;
+			background: url(lottery-bg.jpg) no-repeat center center;
 			position: relative;
 		}
 
 		.item-unit,
 		.start-button {
-			width: 178px;
-			height: 178px;
+			width: 166px;
+			height: 166px;
 			display: inline-block;
 			margin-left: 21px;
 			margin-top: 21px;
-			border: 1px solid #FFF;
-
+			border: 2px solid #FFF;
+			border-radius: 22px;
 			background-color: #FFF;
 		}
 
+		.start-button {
+			background-image: url(lottery.png);
+			background-repeat: no-repeat;
+			background-position: center center;
+			background-size: cover;
+		}
+
 		.item-unit.active {
-			width: 178px;
-			height: 178px;
+			width: 166px;
+			height: 166px;
 			display: inline-block;
 			margin-left: 21px;
 			margin-top: 21px;
-			border: 1px solid #F00;
+			border: 2px solid #F00;
+		}
+		div#lottery-layout {
+			padding-top: 290px;
+			margin-left: 16px;
 		}
 	</style>
 </head>
 <body>
 <div id="main-section">
-	<div class="item-unit in0"></div>
-	<div class="item-unit in1"></div>
-	<div class="item-unit in2"></div>
-	<div class="item-unit in7"></div>
-	<div class="start-button"></div>
-	<div class="item-unit in3"></div>
-	<div class="item-unit in6"></div>
-	<div class="item-unit in5"></div>
-	<div class="item-unit in4"></div>
-
+	<div id="lottery-layout">
+		<div class="item-unit in0"></div>
+		<div class="item-unit in1"></div>
+		<div class="item-unit in2"></div>
+		<div class="item-unit in7"></div>
+		<div class="start-button"></div>
+		<div class="item-unit in3"></div>
+		<div class="item-unit in6"></div>
+		<div class="item-unit in5"></div>
+		<div class="item-unit in4"></div>
+	</div>
 </div>
 <script>
+	var _phone = getParameterValue(window.location.href, 'phone');
 	/**
 	 * 绘制抽奖UI
 	 */
 		//测试数据
 	var _tempItemList = [
-			'http://cdn.steamstatic.com.8686c.com/steam/apps/455480/capsule_184x69.jpg',
-			'http://cdn.steamstatic.com.8686c.com/steam/apps/482440/capsule_184x69.jpg',
-			'http://cdn.steamstatic.com.8686c.com/steam/apps/529240/capsule_184x69.jpg',
-			'http://cdn.steamstatic.com.8686c.com/steam/apps/306000/capsule_184x69.jpg',
-			'http://cdn.steamstatic.com.8686c.com/steam/apps/528820/capsule_184x69.jpg',
-			'http://cdn.steamstatic.com.8686c.com/steam/apps/505730/capsule_184x69.jpg',
-			'http://cdn.steamstatic.com.8686c.com/steam/apps/500180/capsule_184x69.jpg',
-			'http://cdn.steamstatic.com.8686c.com/steam/apps/115800/capsule_184x69.jpg',
-			'http://cdn.steamstatic.com.8686c.com/steam/apps/381210/capsule_184x69.jpg'
+			'itemunit1.png',
+			'itemunit2.png',
+			'itemunit3.png',
+			'itemunit4.png',
+			'itemunit5.png',
+			'itemunit6.png',
+			'itemunit7.png',
+			'itemunit8.png'
 		];
-	//从接口读入奖品
+
 	//填充奖品到item-unit
 	for (var i = 0; i < 9; i++) {
 		$('.in' + i).css({
-			'background':      'url(' + _tempItemList[i] + ') no-repeat center center',
-			'background-size': 'cover'
+			'background-image':  'url(' + _tempItemList[i] + ')',
+			'background-repeat': 'no-repeat',
+			'background-size':   'cover',
+			'background-color':  '#FFF'
 		});
 	}
+
+	$.getJSON('http://www.xiaolvyou.com.cn/znhz/front/huodong_addChouJiangOrder.action?phone='+_phone,function(result){
+		//奖品数据
+		var prizeList = {
+			'p590': 5,
+			'p589': 6,
+			'p588': 7,
+			'p587': 4,
+			'p586': 8,
+			'p583': 1,
+			'p582': 2,
+			'p581': 3
+		};
+
+		/**
+		 * 处理错误的返回值
+		 */
+		var errMsg = '';
+		if (result.status=='102') errMsg = '您已参加过抽奖';
+		if (result.status=='103') errMsg = '您尚未购买门票';
+		if (errMsg !=''){
+			alert(errMsg+',系统将自动返回首页');
+			window.location.href = 'index.html';
+		}
+
+		//将抽奖位置记录在抽奖按钮上
+		$('.start-button').attr({
+			'point': prizeList['p'+result.rotate],
+			'message': result.miaoshaname
+		});
+	});
+
 
 
 	/**
 	 * 执行抽奖动作
 	 */
 			 //点击抽奖后的时间
-	var overFlag = false;
+	var overFlag     = false;
 	var currentPoint = -1;
 	var countPoint   = 0;
 	var _turnPoint   = 16;	//预先多转的点数量
-	var _bounsPoint  = 1+parseInt(Math.random() * 7);	//获奖位置
+	var _bounsPoint  = 5;	//获奖位置
 	console.log('_bounsPoint:', _bounsPoint);
 	$('.start-button').click(function () {
-		if(overFlag){
+		if (overFlag) {
 			alert('您已经抽过奖了');
 			return false;
 		}
+		//位置赋值
+		_bounsPoint = parseInt($('.start-button').attr('point'));
 		//转圈
 		var turnID = setInterval(function () {
 			currentPoint++;
@@ -103,10 +182,18 @@
 			if (currentPoint > 7) {
 				currentPoint = 0;
 			}
-			console.log('currentPoint:',currentPoint,'countPoint:',countPoint);
+			//console.log('currentPoint:', currentPoint, 'countPoint:', countPoint, 'bounsPoint:',_bounsPoint,'turnPoint:',_turnPoint);
+			console.log('currentPoint:',countPoint, 'endPoint:',(_turnPoint + _bounsPoint) );
 			//超过总数则停止
 			if (countPoint == (_turnPoint + _bounsPoint)) {
 				clearInterval(turnID);
+				setTimeout(function(){
+					var _bounsMessage = $('.start-button').attr('message');
+					if (_bounsMessage!='谢谢参与'){
+						_bounsMessage = '恭喜您获得了:'+_bounsMessage;
+					}
+					alert(_bounsMessage);
+				},200);
 				overFlag = true;
 			}
 

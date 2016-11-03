@@ -194,6 +194,8 @@
 					if (unit.miaoshapro_id == '585') _type = 'double-ticket';
 					$('#main-section').append('	<div class="' + _type + ' ticket"> <input type="checkbox" name="" id="' + unit.sys_show_order_id + '" checked="checked"> <div class="ticket-time">购买于 ' + unit.miaoshatime + '</div> <div class="ticket-number">' + unit.dispatchtype + '张</div> <div class="status">' + unit.paystatedes + '</div> </div>');
 
+				}else{
+					alert('此二维码无效！');
 				}
 
 			});

@@ -41,20 +41,24 @@
 		body {
 			padding:0;
 			margin:0;
+			background-color: #2584e6;
+			padding-bottom: 50px;
 		}
 		#main-section {
 			width:640px;
-			height:1151px;
-			background: url(common-bg.png) no-repeat center center;
+			/*height:1151px;*/
+			/*background: url(common-bg.png) no-repeat center center;*/
 			position:relative;
 		}
 		#input-phone {
 			width: 454px;
 			height: 173px;
 			background: url(input-phone.png) no-repeat center center;
-			position: absolute;
-			left: 93px;
-			top: 110px;
+			/* position: absolute; */
+			/* left: 93px; */
+			/* top: 60px; */
+			margin: 70px auto 0 auto;
+			position: relative;
 		}
 		.float-btn {
 			position: absolute;
@@ -81,23 +85,32 @@
 			border-radius: 20px;
 			cursor: pointer;
 		}
-		div#QR-code {
+		div.QR-code {
 			width: 454px;
-			height: 454px;
-			/*background: url(test-qrcode.png) no-repeat center center;*/
-			background-size: cover;
-			position: absolute;
-			left: 93px;
-			top: 420px;
-
-			display:none;
+			margin: 40px auto 0 auto;
+			background-color: #FFF;
+			color:#333;
+		}
+		div.QR-code span {
+			text-align: center;
+			line-height:150%;
+			font-size:20px;
+			display: block;
+			padding-bottom: 22px;
+		}
+		div.QR-code img {
+			width:454px;
+			height:454px;
+			display:block;
 		}
 		div#lottery {
 			margin: 0 auto;
 			text-align: center;
-			padding-top: 920px;
-
-			display:none;
+			padding-top: 40px;
+			display: none;
+		}
+		div#lottery a {
+			color: #FF0;
 		}
 		#lottery a,
 		#thanks {
@@ -108,28 +121,30 @@
 			text-decoration: none;
 		}
 		#thanks {
-			position: absolute;
+			/* position: absolute; */
 			width: 100%;
-			top: 350px;
+			margin-top: 20px;
 			left: 0;
-			display:none;
+			display: none;
 		}
 	</style>
 </head>
 <body>
 <div id="main-section">
+	<div id="title">
+		<img src="title.jpg" alt="">
+	</div>
 	<!--输入手机号码区域-->
 	<div id="input-phone">
 		<input type="text" id="phone" class="cs-input" placeholder="请先输入手机号码">
 		<div id="get-QR-code" class="float-btn"></div>
 	</div>
-	<!--二维码展示区域-->
-	<div id="thanks">感谢您的购买，请您妥善保存好二维码</div>
-	<div id="QR-code"></div>
 	<!--抽奖区域-->
 	<div id="lottery">
 		<a href="lottery.html" target="_self">点击这里前往抽奖区</a>
 	</div>
+	<!--二维码展示区域-->
+	<div id="thanks">感谢您的购买，请您妥善保存好二维码</div>
 </div>
 
 <script>
@@ -144,12 +159,6 @@
 				console.log(result);
 				//如果购买产品结果集是空的，则不显示抽奖和二维码
 				if (result.orderList.length>0){
-					//把二维码显示出来
-					$('#QR-code').css({
-						'background': 'url(http://www.xiaolvyou.com.cn/znhz/front/qr_codeImage.action?code_url='+result.confirm_url+') no-repeat center center',
-						'background-size':'cover'
-					}).show();
-					$('#thanks').show();
 					//把所有产品循环显示出来
 					result.orderList.map(function(unit){
 						/*
@@ -162,12 +171,19 @@
 						 miaoshatime 创建时间
 						 checktdate 更新时间
 						 */
+						var ticketType = '';
+						if (unit.miaoshapro_id=='584') ticketType = '单人票';
+						if (unit.miaoshapro_id=='585') ticketType = '双人票';
+
+						//把二维码显示出来
+						$('#main-section').append('<div class="QR-code"><img src="http://www.xiaolvyou.com.cn/znhz/front/qr_codeImage.action?code_url='+unit.address+'" alt=""><span>'+unit.miaoshatime.substring(0,16)+'购买的'+unit.dispatchtype+'张'+ticketType+'</span></div>');
+						$('#thanks').show();
 						console.log(/*时间*/unit.miaoshatime,/*账单ID*/unit.sys_show_order_id, /*对应手机号码*/unit.phone, /*状态*/unit.paystatedes, /*数量*/unit.dispatchtype);
 					});
 					//显示抽奖地址
 					$('#lottery').show();
 				}else{
-					alert('您还没有购买门票。');
+					alert('您没有或已用完可供扫描的门票二维码了。');
 				}
 
 			});

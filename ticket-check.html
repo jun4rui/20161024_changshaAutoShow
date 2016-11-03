@@ -42,7 +42,7 @@
 			padding: 0;
 			margin: 0;
 			background: #0071BF;
-			padding-bottom:20px;
+			padding-bottom: 20px;
 		}
 
 		#main-section {
@@ -69,8 +69,8 @@
 			height: 3em;
 			*/
 			width: 0;
-			height:0;
-			overflow:hidden;
+			height: 0;
+			overflow: hidden;
 		}
 
 		.ticket-time {
@@ -96,8 +96,8 @@
 			position: absolute;
 			right: 50px;
 			bottom: 0px;
-			background-color: #00a0e8;
-			color: #ffffff;
+			background-color: #00A0E8;
+			color: #FFF;
 			font-size: 1.5em;
 			/* padding: 0 7px; */
 			padding: 0 0.2em;
@@ -112,9 +112,11 @@
 			background: url(ticket-double.png) no-repeat center center;
 			background-size: cover;
 		}
+
 		.ticket:last-child {
-			margin-bottom:70px;
+			margin-bottom: 70px;
 		}
+
 		div#submit-btn {
 			position: fixed;
 			width: 100%;
@@ -122,13 +124,14 @@
 			bottom: 0;
 			text-align: center;
 			font-size: 24px;
-			color: #ffffff;
-			background-color: #0095ff;
-			border-color: #07c;
-			box-shadow: inset 0 1px 0 #66bfff;
+			color: #FFF;
+			background-color: #0095FF;
+			border-color: #07C;
+			box-shadow: inset 0 1px 0 #66BFFF;
 			border: 1px solid transparent;
 			border-radius: 2px;
 		}
+
 		div#phone {
 			text-align: center;
 			color: #FFF;
@@ -171,38 +174,27 @@
 		var _trade_no = getParameterValue(window.location.href, 'trade_no');
 		//检查是否有phone电话号码参数
 		if (_trade_no == "") {
-			alert('手机号码不正确或没有输入，请检查后重新扫码。');
+			alert('订单号码不正确或没有输入，请检查后重新扫码。');
 		} else {
-			//填写#phone
-			$('#phone>span').text(_trade_no);
 			//有参数则调用接口查询数据
 			//请求获取二维码 //15874991816
-			$.getJSON('http://www.xiaolvyou.com.cn/znhz/front/huodong_queryOrderDetail.action?phone=' + _phone, function (result) {
+			$.getJSON('http://www.xiaolvyou.com.cn/znhz/front/huodong_getOrderDetail.action?trade_no=' + _trade_no, function (result) {
 				console.log(result);
 				//如果购买产品结果集是空的，则不显示抽奖和二维码
-				if (result.orderList.length > 0) {
+				if (result.orderVO != null) {
 					//把所有产品循环显示出来
-					result.orderList.map(function (unit) {
-						/*
-						 miaoshaname 产品名称
-						 miaoshapro_id 产品类型ID
-						 mark 预购车型
-						 fraction 价格
-						 dispatchtype 数量
-						 phone 手机号码
-						 paystatedes 支付状态
-						 miaoshatime 创建时间
-						 checktdate 更新时间
-						 */
-						console.log(/*类型*/unit.miaoshaname,unit.miaoshapro_id, /*时间*/unit.miaoshatime, /*账单ID*/unit.sys_show_order_id, /*对应手机号码*/unit.phone, /*状态*/unit.paystatedes, /*数量*/unit.dispatchtype);
-						//输出到屏幕上
-						var _type = '';
-						if (unit.miaoshapro_id == '584') _type = 'single-ticket';
-						if (unit.miaoshapro_id == '585') _type = 'double-ticket';
-						$('#main-section').append('	<div class="'+_type+' ticket"> <input type="checkbox" name="" id="' + unit.sys_show_order_id + '" checked="checked"> <div class="ticket-time">购买于 ' + unit.miaoshatime + '</div> <div class="ticket-number">' + unit.dispatchtype + '张</div> <div class="status">' + unit.paystatedes + '</div> </div>');
-					});
-				} else {
-					alert('您还没有购买门票。');
+					var unit = result.orderVO;
+
+					//填写#phone
+					$('#phone>span').text(unit.phone);
+
+					console.log(/*类型*/unit.miaoshaname, unit.miaoshapro_id, /*时间*/unit.miaoshatime, /*账单ID*/unit.sys_show_order_id, /*对应手机号码*/unit.phone, /*状态*/unit.paystatedes, /*数量*/unit.dispatchtype);
+					//输出到屏幕上
+					var _type = '';
+					if (unit.miaoshapro_id == '584') _type = 'single-ticket';
+					if (unit.miaoshapro_id == '585') _type = 'double-ticket';
+					$('#main-section').append('	<div class="' + _type + ' ticket"> <input type="checkbox" name="" id="' + unit.sys_show_order_id + '" checked="checked"> <div class="ticket-time">购买于 ' + unit.miaoshatime + '</div> <div class="ticket-number">' + unit.dispatchtype + '张</div> <div class="status">' + unit.paystatedes + '</div> </div>');
+
 				}
 
 			});
@@ -214,23 +206,23 @@
 
 	//点击查票按钮，将选择的票据划成已使用状态
 	//改变：曹熙要一次全部提交不用单个选择了
-	$('#submit-btn').click(function(){
+	$('#submit-btn').click(function () {
 		var _tempList = [];
-		var _idList = '';
+		var _idList   = '';
 		$(".ticket>input[type='checkbox']").each(function () {
-			console.log($(this).attr('id')+":"+$(this).prop('checked'));
-			if ($(this).prop('checked')){
+			console.log($(this).attr('id') + ":" + $(this).prop('checked'));
+			if ($(this).prop('checked')) {
 
 				_tempList.push($(this).attr('id'));
 			}
 		});
 		_idList = _tempList.join(',');
-		alert(_idList);
+		//alert(_idList);
 		//发送给接口
-		console.log('http://www.xiaolvyou.com.cn/znhz/front/huodong_updateOrderPayState.action?trade_no_arr='+_idList);
-		$.getJSON('http://www.xiaolvyou.com.cn/znhz/front/huodong_updateOrderPayState.action?trade_no_arr='+_idList,function(result){
+		console.log('http://www.xiaolvyou.com.cn/znhz/front/huodong_updateOrderPayState.action?trade_no_arr=' + _idList);
+		$.getJSON('http://www.xiaolvyou.com.cn/znhz/front/huodong_updateOrderPayState.action?trade_no_arr=' + _idList, function (result) {
 			console.log(result);
-			alert('已确定'+result.status+'张票');
+			alert('已确定' + result.status + '张票');
 		});
 	});
 </script>

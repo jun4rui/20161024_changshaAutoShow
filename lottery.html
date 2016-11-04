@@ -137,43 +137,10 @@
 		});
 	}
 
-	$.getJSON('http://www.xiaolvyou.com.cn/znhz/front/huodong_addChouJiangOrder.action?phone='+_phone,function(result){
-		//奖品数据
-		var prizeList = {
-			'p590': 5,
-			'p589': 6,
-			'p588': 7,
-			'p587': 4,
-			'p586': 8,
-			'p583': 1,
-			'p582': 2,
-			'p581': 3
-		};
-
-		/**
-		 * 处理错误的返回值
-		 */
-		var errMsg = '';
-		if (result.status=='102') errMsg = '您已参加过抽奖';
-		if (result.status=='103') errMsg = '您尚未购买门票';
-		if (errMsg !=''){
-			alert(errMsg+',系统将自动返回首页');
-			window.location.href = 'index.html';
-		}
-
-		//将抽奖位置记录在抽奖按钮上
-		$('.start-button').attr({
-			'point': prizeList['p'+result.rotate],
-			'message': result.miaoshaname
-		});
-	});
-
-
-
 	/**
 	 * 执行抽奖动作
 	 */
-			 //点击抽奖后的时间
+			//点击抽奖后的时间
 	var overFlag     = false;
 	var currentPoint = -1;
 	var countPoint   = 0;
@@ -181,41 +148,77 @@
 	var _bounsPoint  = 5;	//获奖位置
 	console.log('_bounsPoint:', _bounsPoint);
 	$('.start-button').click(function () {
-		if (overFlag) {
+		if (overFlag || typeof($('.start-button'))=='undefined') {
 			alert('您已经抽过奖了');
 			return false;
 		}
-		//位置赋值
-		_bounsPoint = parseInt($('.start-button').attr('point'));
-		//转圈
-		var turnID = setInterval(function () {
-			currentPoint++;
-			countPoint++;
-			//超过8则转回1
-			if (currentPoint > 7) {
-				currentPoint = 0;
-			}
-			//console.log('currentPoint:', currentPoint, 'countPoint:', countPoint, 'bounsPoint:',_bounsPoint,'turnPoint:',_turnPoint);
-			console.log('currentPoint:',countPoint, 'endPoint:',(_turnPoint + _bounsPoint) );
-			//超过总数则停止
-			if (countPoint == (_turnPoint + _bounsPoint)) {
-				clearInterval(turnID);
-				setTimeout(function(){
-					var _bounsMessage = $('.start-button').attr('message');
-					if (_bounsMessage!='谢谢参与'){
-						_bounsMessage = '恭喜您获得了:'+_bounsMessage;
-					}
-					alert(_bounsMessage);
-				},200);
-				overFlag = true;
+
+		$.getJSON('http://www.xiaolvyou.com.cn/znhz/front/huodong_addChouJiangOrder.action?phone='+_phone,function(result){
+			//奖品数据
+			var prizeList = {
+				'p590': 5,
+				'p589': 6,
+				'p588': 7,
+				'p587': 4,
+				'p586': 8,
+				'p583': 1,
+				'p582': 2,
+				'p581': 3
+			};
+
+			/**
+			 * 处理错误的返回值
+			 */
+			var errMsg = '';
+			if (result.status=='102') errMsg = '您已参加过抽奖';
+			if (result.status=='103') errMsg = '您尚未购买门票';
+			if (errMsg !=''){
+				alert(errMsg+',系统将自动返回首页');
+				window.location.href = 'index.html';
 			}
 
-			//绘制当前位置
-			$('.item-unit.active').removeClass('active');
-			$('.item-unit.in' + currentPoint).addClass('active');
+			//将抽奖位置记录在抽奖按钮上
+			$('.start-button').attr({
+				'point': prizeList['p'+result.rotate],
+				'message': result.miaoshaname
+			});
+			//位置赋值
+			_bounsPoint = parseInt($('.start-button').attr('point'));
+			//转圈
+			var turnID = setInterval(function () {
+				currentPoint++;
+				countPoint++;
+				//超过8则转回1
+				if (currentPoint > 7) {
+					currentPoint = 0;
+				}
+				//console.log('currentPoint:', currentPoint, 'countPoint:', countPoint, 'bounsPoint:',_bounsPoint,'turnPoint:',_turnPoint);
+				console.log('currentPoint:',countPoint, 'endPoint:',(_turnPoint + _bounsPoint) );
+				//超过总数则停止
+				if (countPoint >= (_turnPoint + _bounsPoint)) {
+					clearInterval(turnID);
+					setTimeout(function(){
+						var _bounsMessage = $('.start-button').attr('message');
+						if (_bounsMessage!='谢谢参与'){
+							_bounsMessage = '恭喜您获得了:'+_bounsMessage;
+						}
+						alert(_bounsMessage);
+					},200);
+					overFlag = true;
+				}
 
-		}, 100);
+				//绘制当前位置
+				$('.item-unit.active').removeClass('active');
+				$('.item-unit.in' + currentPoint).addClass('active');
+
+			}, 100);
+
+		});
+
+
 	});
+
+
 </script>
 
 </body>

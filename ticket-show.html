@@ -94,9 +94,10 @@
 		div.QR-code span {
 			text-align: center;
 			line-height:150%;
-			font-size:20px;
+			font-size:26px;
 			display: block;
 			padding-bottom: 22px;
+			color:#F00;
 		}
 		div.QR-code img {
 			width:454px;
@@ -172,11 +173,18 @@
 						 checktdate 更新时间
 						 */
 						var ticketType = '';
-						if (unit.miaoshapro_id=='584') ticketType = '单人票';
-						if (unit.miaoshapro_id=='585') ticketType = '双人票';
+						var ticketInfo = '';
+						if (unit.miaoshapro_id=='584') {
+							ticketType = '单人电子票';
+							ticketInfo = '10月28日至12月10日';
+						}
+						if (unit.miaoshapro_id=='585') {
+							ticketType = '双人电子套票';
+							ticketInfo = '10月28日至12月10日';
+						}
 
 						//把二维码显示出来
-						$('#main-section').append('<div class="QR-code"><img src="http://www.xiaolvyou.com.cn/znhz/front/qr_codeImage.action?code_url='+unit.address+'" alt=""><span>'+unit.miaoshatime.substring(0,16)+'购买的'+unit.dispatchtype+'张'+ticketType+'</span></div>');
+						$('#main-section').append('<div class="QR-code"><img src="http://www.xiaolvyou.com.cn/znhz/front/qr_codeImage.action?code_url='+unit.address+'" alt=""><span>'+ticketType+' '+ticketInfo+'</span></div>');
 						$('#thanks').show();
 						console.log(/*时间*/unit.miaoshatime,/*账单ID*/unit.sys_show_order_id, /*对应手机号码*/unit.phone, /*状态*/unit.paystatedes, /*数量*/unit.dispatchtype);
 					});

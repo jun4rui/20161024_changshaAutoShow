@@ -64,6 +64,14 @@
 			border-radius: 20px;
 			cursor: pointer;
 		}
+		div#get-check-code.delay {
+			background-color: #6b6b6b;
+			color: #fafafa;
+			/* content: 'Time'; */
+			line-height: 40px;
+			text-align: center;
+			font-size: 18px;
+		}
 
 		#ticket-single .buy-btn.float-btn {
 			left: 380px;
@@ -175,11 +183,16 @@
 
 			//重发验证码倒计时
 			$('#get-check-code').attr('countdown',60);
+			$('#get-check-code').addClass('delay');
+			$('#get-check-code').text('发送('+parseInt($('#get-check-code').attr('countdown'))+')');
 			var doCountdown = setInterval(function(){
 				console.log(doCountdown, $('#get-check-code').attr('countdown'));
+				$('#get-check-code').text('发送('+parseInt($('#get-check-code').attr('countdown'))+')');
 				$('#get-check-code').attr('countdown', parseInt($('#get-check-code').attr('countdown'))-1);
 				if (parseInt($('#get-check-code').attr('countdown'))<0){
 					clearInterval(doCountdown);
+					$('#get-check-code').removeClass('delay');
+					$('#get-check-code').text('');
 				}
 			},1000);
 

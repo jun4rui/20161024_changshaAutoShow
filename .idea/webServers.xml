@@ -2,7 +2,7 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="9e5d4179-2572-481c-ad1d-b681994430e1" name="carshow2016" url="http://www.xiaolvyou.com.cn/hncz/carshow015/">
+      <webServer id="9e5d4179-2572-481c-ad1d-b681994430e1" name="carshow2016" url="http://www.xiaolvyou.com.cn/znhz/carshow2016/">
         <fileTransfer host="www.xiaolvyou.com.cn" port="222" rootFolder="/znhz/carshow2016">
           <advancedOptions>
             <advancedOptions compatibilityMode="true" dataProtectionLevel="Private" passiveMode="true" />

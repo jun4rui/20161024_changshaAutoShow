@@ -144,7 +144,7 @@
 	var overFlag     = false;
 	var currentPoint = -1;
 	var countPoint   = 0;
-	var _turnPoint   = 16;	//预先多转的点数量
+	var _turnPoint   = 56;	//预先多转的点数量
 	var _bounsPoint  = 5;	//获奖位置
 	console.log('_bounsPoint:', _bounsPoint);
 	$('.start-button').click(function () {
@@ -210,7 +210,6 @@
 				//绘制当前位置
 				$('.item-unit.active').removeClass('active');
 				$('.item-unit.in' + currentPoint).addClass('active');
-
 			}, 100);
 
 		});

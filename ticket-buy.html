@@ -177,6 +177,10 @@
 <script>
 	//发送验证码的处理
 	$('#get-check-code').click(function () {
+		$.getJSON('http://www.xiaolvyou.com.cn/znhz/front/huodong_isvaildHuoDongOrder.action?phone='+$('#phone').val(), function(result){
+			console.log(result.status);
+			$('#ticket-double .buy-btn').attr('flag',result.status);
+		});
 		var _countdown = parseInt($('#get-check-code').attr('countdown'));
 		if (_countdown>0){
 			alert('请不要频繁发送验证码，等待'+_countdown+'秒后再发送');
@@ -232,7 +236,11 @@
 		}
 
 		//4. 如果有错误信息，打印出错误信息
-		// 双人票只能买一次
+		//5.  双人票只能买一次
+		if( $(this).attr('fid')=='ticket-double' && $(this).attr('flag')==0 ){
+			errMsg += '双人套票只能购买一次\n';
+		}
+
 		if (errMsg == '') {
 			//4. 检查验证码是否正确
 			//- 确认确认码 http://localhost:8080/znhz/front/huodong_getSmsConfirm.action   参数  vaildcode 确认码  phone 手机

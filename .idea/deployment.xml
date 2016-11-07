@@ -23,7 +23,7 @@
           </mappings>
         </serverdata>
       </paths>
-      <paths name="xiaolvyou">
+      <paths name="xiaolvyou_other">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />

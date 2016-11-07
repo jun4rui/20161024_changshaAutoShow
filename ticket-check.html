@@ -75,8 +75,8 @@
 
 		.ticket-time {
 			position: absolute;
-			right: 172px;
-			bottom: 67px;
+			right: 22px;
+			bottom: 58px;
 			text-shadow: 1px 1px 2px #F7C07E;
 			color: #EF8200;
 		}
@@ -104,12 +104,12 @@
 		}
 
 		.single-ticket {
-			background: url(ticket-single.png) no-repeat center center;
+			background: url(ticket-single-c.png) no-repeat center center;
 			background-size: cover;
 		}
 
 		.double-ticket {
-			background: url(ticket-double.png) no-repeat center center;
+			background: url(ticket-double-c.png) no-repeat center center;
 			background-size: cover;
 		}
 
@@ -170,10 +170,6 @@
 </div>
 
 <script>
-	//TODO: 提交后要有个提示
-	//TODO: 提交后要重新刷新页面
-	//TODO: 这里的图片要把购买按钮去掉
-
 	//检查localStorage中是否保存所需的数据
 	//if (localStorage.getItem('checkerFlag') == 1) {
 	if (true) {
@@ -199,7 +195,7 @@
 					var _type = '';
 					if (unit.miaoshapro_id == '584') _type = 'single-ticket';
 					if (unit.miaoshapro_id == '585') _type = 'double-ticket';
-					$('#main-section').append('	<div class="' + _type + ' ticket"> <input type="checkbox" name="" id="' + unit.sys_show_order_id + '" checked="checked"> <div class="ticket-time">购买于 ' + unit.miaoshatime + '</div> <div class="ticket-number">' + unit.dispatchtype + '张</div> <div class="status">' + unit.paystatedes + '</div> </div>');
+					$('#main-section').append('	<div class="' + _type + ' ticket"> <input type="checkbox" name="" id="' + unit.sys_show_order_id + '" checked="checked"> <div class="ticket-time">' + unit.miaoshatime + '</div> <div class="ticket-number">' + unit.dispatchtype + '张</div> <div class="status">' + unit.paystatedes + '</div> </div>');
 
 				}else{
 					alert('此二维码无效！');
@@ -231,6 +227,7 @@
 		$.getJSON('http://www.xiaolvyou.com.cn/znhz/front/huodong_updateOrderPayState.action?trade_no_arr=' + _idList, function (result) {
 			console.log(result);
 			alert('已确定' + result.status + '张票');
+			window.location.href = window.location.href+'&random='+parseInt(Math.random()*10000);
 		});
 	});
 </script>

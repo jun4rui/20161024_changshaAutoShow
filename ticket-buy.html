@@ -5,6 +5,38 @@
 	<meta name="viewport" content="width=640, user-scalable=no">
 	<title>第十二届长沙车展:购票</title>
 	<script src="jquery-3.1.1.min.js"></script>
+	<script>
+		//查询url参数函数
+		//有则返回参数列表list
+		//没有则返回空串
+		function getParameters(inUrl/*完整的URL字符串*/) {
+			//url中有?号才继续
+			if (inUrl.indexOf('\?') >= 0) {
+				return inUrl.substring(inUrl.indexOf('?') + 1).split('&');    //有则返回所有参数的list
+			} else {
+				return '';  //没有则返回''
+			}
+		}
+
+		//获得url中某个参数的值
+		//有则返回参数的值
+		//没有则返回空串
+		function getParameterValue(inUrl/*输入Url*/, inName/*参数名*/) {
+			var paraList = getParameters(inUrl);
+			for (var i = 0; i < paraList.length; i++) {
+				//如果没有'='则跳过
+				if (paraList[i].indexOf('=') < 0) {
+					continue;
+				}
+				//如果参数名=inName则返回参数值
+				var tempVal = paraList[i].split('=');
+				if (tempVal[0] == inName) {
+					return tempVal[1];
+				}
+			}
+			return '';
+		}
+	</script>
 	<style>
 		body {
 			padding: 0;
@@ -64,9 +96,10 @@
 			border-radius: 20px;
 			cursor: pointer;
 		}
+
 		div#get-check-code.delay {
-			background-color: #6b6b6b;
-			color: #fafafa;
+			background-color: #6B6B6B;
+			color: #FAFAFA;
 			/* content: 'Time'; */
 			line-height: 40px;
 			text-align: center;
@@ -78,7 +111,7 @@
 			top: 713px;
 			width: 180px;
 			border-radius: 5px;
-			background-color: #e3403a;
+			background-color: #E3403A;
 			border: 1px solid #F00;
 			line-height: 40px;
 			text-align: center;
@@ -93,7 +126,7 @@
 			top: 885px;
 			width: 180px;
 			border-radius: 5px;
-			background-color: #e3403a;
+			background-color: #E3403A;
 			border: 1px solid #F00;
 			line-height: 40px;
 			text-align: center;
@@ -111,11 +144,11 @@
 			height: 42px;
 			border: 1px solid #969595;
 			color: #000;
-			box-shadow: 0px 0px 5px #d2d2d2;
+			box-shadow: 0px 0px 5px #D2D2D2;
 			-webkit-appearance: none;
 			text-align: center;
 			text-indent: 46px;
-			background: url(select-arrow.png) no-repeat scroll 100px center #f1f0f0;
+			background: url(select-arrow.png) no-repeat scroll 100px center #F1F0F0;
 			background-size: 10px;
 		}
 
@@ -131,7 +164,7 @@
 			-webkit-appearance: none;
 			text-align: center;
 			text-indent: 46px;
-			background: /*url(select-arrow.png) no-repeat scroll 100px center*/ #f1f0f0;
+			background: /*url(select-arrow.png) no-repeat scroll 100px center*/ #F1F0F0;
 			background-size: 10px;
 		}
 	</style>
@@ -149,6 +182,7 @@
 		<input type="hidden" name="miaoshaprp_id" value="584">
 		<input type="hidden" name="phone" value="">
 		<input type="hidden" name="remark" value="">
+		<input type="hidden" name="channel" value="">
 		<div class="buy-btn float-btn" fid="ticket-single">购买此票</div>
 		<select name="quantity" class="float-btn">
 			<option value="1">1张</option>
@@ -168,6 +202,7 @@
 		<input type="hidden" name="miaoshaprp_id" value="585">
 		<input type="hidden" name="phone" value="">
 		<input type="hidden" name="remark" value="">
+		<input type="hidden" name="channel" value="">
 		<div class="buy-btn float-btn" fid="ticket-double">购买此票</div>
 		<select name="quantity" class="float-btn">
 			<option value="1">1张</option>
@@ -175,15 +210,31 @@
 	</form>
 </div>
 <script>
+	/**
+	 * 处理带渠道参数（channel）的入口链接
+	 */
+	var _channel = getParameterValue(window.location.href, 'channel');
+	if (_channel!=''){
+		$('input[name=channel]').val(_channel);
+	}
+
+	//如果在微信中提醒用户用浏览器打开
+	var userAgent = navigator.userAgent.toLowerCase();
+	//微信
+	if (userAgent.match(/micromessenger/i) == 'micromessenger'){
+		alert('微信中无法使用支付宝支付，请点击右上角选择"在浏览器打开"');
+	}
+
+
 	//发送验证码的处理
 	$('#get-check-code').click(function () {
-		$.getJSON('http://www.xiaolvyou.com.cn/znhz/front/huodong_isvaildHuoDongOrder.action?phone='+$('#phone').val(), function(result){
+		$.getJSON('http://www.xiaolvyou.com.cn/znhz/front/huodong_isvaildHuoDongOrder.action?phone=' + $('#phone').val(), function (result) {
 			console.log(result.status);
-			$('#ticket-double .buy-btn').attr('flag',result.status);
+			$('#ticket-double .buy-btn').attr('flag', result.status);
 		});
 		var _countdown = parseInt($('#get-check-code').attr('countdown'));
-		if (_countdown>0){
-			alert('请不要频繁发送验证码，等待'+_countdown+'秒后再发送');
+		if (_countdown > 0) {
+			alert('请不要频繁发送验证码，等待' + _countdown + '秒后再发送');
 			return false;
 		}
 		if ($('#phone').val().match(/1[0-9]{10}/) == $('#phone').val()) {
@@ -199,19 +250,19 @@
 			});
 
 			//重发验证码倒计时
-			$('#get-check-code').attr('countdown',60);
+			$('#get-check-code').attr('countdown', 60);
 			$('#get-check-code').addClass('delay');
-			$('#get-check-code').text('已发送('+parseInt($('#get-check-code').attr('countdown'))+')');
-			var doCountdown = setInterval(function(){
+			$('#get-check-code').text('已发送(' + parseInt($('#get-check-code').attr('countdown')) + ')');
+			var doCountdown = setInterval(function () {
 				console.log(doCountdown, $('#get-check-code').attr('countdown'));
-				$('#get-check-code').text('已发送('+parseInt($('#get-check-code').attr('countdown'))+')');
-				$('#get-check-code').attr('countdown', parseInt($('#get-check-code').attr('countdown'))-1);
-				if (parseInt($('#get-check-code').attr('countdown'))<0){
+				$('#get-check-code').text('已发送(' + parseInt($('#get-check-code').attr('countdown')) + ')');
+				$('#get-check-code').attr('countdown', parseInt($('#get-check-code').attr('countdown')) - 1);
+				if (parseInt($('#get-check-code').attr('countdown')) < 0) {
 					clearInterval(doCountdown);
 					$('#get-check-code').removeClass('delay');
 					$('#get-check-code').text('');
 				}
-			},1000);
+			}, 1000);
 
 		} else {
 			alert('请填写好您的手机号码');
@@ -237,7 +288,7 @@
 
 		//4. 如果有错误信息，打印出错误信息
 		//5.  双人票只能买一次
-		if( $(this).attr('fid')=='ticket-double' && $(this).attr('flag')==0 ){
+		if ($(this).attr('fid') == 'ticket-double' && $(this).attr('flag') == 0) {
 			errMsg += '双人套票只能购买一次\n';
 		}
 
@@ -252,11 +303,11 @@
 					//把手机号码和车型传给表单
 					$('input[name=phone]').val($('#phone').val());
 					$('input[name=remark]').val($('#models').val());
-					console.log($('input[name=phone]').val(),$('input[name=remark]').val());
+					console.log($('input[name=phone]').val(), $('input[name=remark]').val());
 
 					//5.提交购买表单
-					console.log('#'+$(this).attr('fid'))
-					$('#'+$(this).attr('fid')).submit();
+					console.log('#' + $(this).attr('fid'))
+					$('#' + $(this).attr('fid')).submit();
 				} else {
 					alert('验证码错误！购买失败');
 				}

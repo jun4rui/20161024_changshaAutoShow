@@ -226,7 +226,7 @@
 		console.log('http://www.xiaolvyou.com.cn/znhz/front/huodong_updateOrderPayState.action?trade_no_arr=' + _idList);
 		$.getJSON('http://www.xiaolvyou.com.cn/znhz/front/huodong_updateOrderPayState.action?trade_no_arr=' + _idList, function (result) {
 			console.log(result);
-			alert('已确定' + result.status + '张票');
+			alert('已检票' + result.status + '张');
 			window.location.href = window.location.href+'&random='+parseInt(Math.random()*10000);
 		});
 	});

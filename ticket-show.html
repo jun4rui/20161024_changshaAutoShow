@@ -189,8 +189,10 @@
 						console.log(/*名字*/unit.miaoshaname,/*账单ID*/unit.sys_show_order_id, /*对应手机号码*/unit.phone, /*状态*/unit.paystatedes, /*数量*/unit.dispatchtype);
 					});
 					//构造抽奖地址并显示抽奖地址
+					/* 20161211 关闭抽奖页面连接
 					$('#lottery>a').attr('href','lottery.html?phone='+$('#phone').val());
 					$('#lottery').show();
+					*/
 				}else{
 					alert('您没有或已用完可供扫描的门票二维码了。');
 				}

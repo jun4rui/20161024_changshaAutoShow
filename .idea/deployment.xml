@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="carshow2016">
+  <component name="PublishConfigData" serverName="carshow2016">
     <serverData>
       <paths name="carshow2016">
         <serverdata>
@@ -23,7 +23,7 @@
           </mappings>
         </serverdata>
       </paths>
-      <paths name="xiaolvyou_other">
+      <paths name="xiaolvyou">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
@@ -31,6 +31,5 @@
         </serverdata>
       </paths>
     </serverData>
-    <option name="myAutoUpload" value="ALWAYS" />
   </component>
 </project>

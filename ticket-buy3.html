@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=640, user-scalable=no">
+	<title>第十二届长沙车展:购票</title>
+	<script src="jquery-3.1.1.min.js"></script>
+	<script>
+		//查询url参数函数
+		//有则返回参数列表list
+		//没有则返回空串
+		function getParameters(inUrl/*完整的URL字符串*/) {
+			//url中有?号才继续
+			if (inUrl.indexOf('\?') >= 0) {
+				return inUrl.substring(inUrl.indexOf('?') + 1).split('&');    //有则返回所有参数的list
+			} else {
+				return '';  //没有则返回''
+			}
+		}
+
+		//获得url中某个参数的值
+		//有则返回参数的值
+		//没有则返回空串
+		function getParameterValue(inUrl/*输入Url*/, inName/*参数名*/) {
+			var paraList = getParameters(inUrl);
+			for (var i = 0; i < paraList.length; i++) {
+				//如果没有'='则跳过
+				if (paraList[i].indexOf('=') < 0) {
+					continue;
+				}
+				//如果参数名=inName则返回参数值
+				var tempVal = paraList[i].split('=');
+				if (tempVal[0] == inName) {
+					return tempVal[1];
+				}
+			}
+			return '';
+		}
+	</script>
+	<style>
+		body {
+			padding: 0;
+			margin: 0;
+			position: relative;
+		}
+
+		#main-section {
+			width: 640px;
+			height: 1152px;
+			background: url(ticket-buy-bg.jpg) no-repeat center center;
+			position: relative;
+		}
+
+		.float-btn {
+			position: absolute;
+			cursor: pointer;
+		}
+
+		.buy-btn {
+			height: 40px;
+			width: 124px;
+			border-radius: 20px;
+		}
+
+		.cs-input {
+			border: 0px;
+			position: absolute;
+			/*background-color: rgba(255,0,0,0.6);*/
+			font-size: 20px;
+			line-height: 200%;
+		}
+
+		input#phone {
+			left: 115px;
+			top: 413px;
+			width: 410px;
+		}
+
+		input#models {
+			left: 115px;
+			top: 477px;
+			width: 410px;
+		}
+
+		input#check-code {
+			left: 115px;
+			top: 532px;
+			width: 120px;
+		}
+
+		div#get-check-code {
+			left: 395px;
+			top: 538px;
+			width: 114px;
+			height: 40px;
+			border-radius: 20px;
+			cursor: pointer;
+		}
+
+		div#get-check-code.delay {
+			background-color: #6B6B6B;
+			color: #FAFAFA;
+			/* content: 'Time'; */
+			line-height: 40px;
+			text-align: center;
+			font-size: 18px;
+		}
+
+		#ticket-single .buy-btn.float-btn {
+			left: 356px;
+			top: 713px;
+			width: 180px;
+			border-radius: 5px;
+			background-color: #E3403A;
+			border: 1px solid #F00;
+			line-height: 40px;
+			text-align: center;
+			font-weight: bold;
+			color: #FFF;
+			font-size: 23px;
+			box-shadow: 0px 3px 0px #555;
+		}
+
+		#ticket-double .buy-btn.float-btn {
+			left: 356px;
+			top: 885px;
+			width: 180px;
+			border-radius: 5px;
+			background-color: #E3403A;
+			border: 1px solid #F00;
+			line-height: 40px;
+			text-align: center;
+			font-weight: bold;
+			color: #FFF;
+			font-size: 23px;
+			box-shadow: 0px 3px 0px #555;
+		}
+
+		#ticket-single .float-btn[name=quantity] {
+			left: 381px;
+			top: 669px;
+			font-size: 20px;
+			width: 123px;
+			height: 42px;
+			border: 1px solid #969595;
+			color: #000;
+			box-shadow: 0px 0px 5px #D2D2D2;
+			-webkit-appearance: none;
+			text-align: center;
+			text-indent: 46px;
+			background: url(select-arrow.png) no-repeat scroll 100px center #F1F0F0;
+			background-size: 10px;
+		}
+
+		#ticket-double .float-btn[name=quantity] {
+			left: 381px;
+			top: 840px;
+			font-size: 20px;
+			width: 123px;
+			height: 42px;
+			border: 1px solid #969595;
+			color: #000;
+			box-shadow: 0px 0px 5px #D2D2D2;
+			-webkit-appearance: none;
+			text-align: center;
+			text-indent: 46px;
+			background: /*url(select-arrow.png) no-repeat scroll 100px center*/ #F1F0F0;
+			background-size: 10px;
+		}
+	</style>
+</head>
+<body>
+<div id="main-section">
+	<!--信息输入表单区域-->
+	<input type="text" id="phone" class="cs-input" placeholder="手机">
+	<input type="text" id="models" class="cs-input" placeholder="预购车型（非必填）">
+	<input type="text" id="check-code" class="cs-input" placeholder="验证码">
+	<div id="get-check-code" class="float-btn" countdown="0"></div>
+
+	<!--订票1区域-->
+	<form action="http://www.xiaolvyou.com.cn/znhz/front/huodong_addHuoDongOrder.action" id="ticket-single">
+		<input type="hidden" name="miaoshaprp_id" value="584">
+		<input type="hidden" name="phone" value="">
+		<input type="hidden" name="remark" value="">
+		<input type="hidden" name="channel" value="">
+		<div class="buy-btn float-btn" fid="ticket-single">购买此票</div>
+		<select name="quantity" class="float-btn">
+			<option value="1">1张</option>
+			<option value="2">2张</option>
+			<option value="3">3张</option>
+			<option value="4">4张</option>
+			<option value="5">5张</option>
+			<option value="6">6张</option>
+			<option value="7">7张</option>
+			<option value="8">8张</option>
+			<option value="9">9张</option>
+			<option value="10">10张</option>
+		</select>
+	</form>
+	<!--订票2区域-->
+	<form action="http://www.xiaolvyou.com.cn/znhz/front/huodong_addHuoDongOrder.action" id="ticket-double">
+		<input type="hidden" name="miaoshaprp_id" value="585">
+		<input type="hidden" name="phone" value="">
+		<input type="hidden" name="remark" value="">
+		<input type="hidden" name="channel" value="">
+		<div class="buy-btn float-btn" fid="ticket-double">购买此票</div>
+		<select name="quantity" class="float-btn">
+			<option value="1">1张</option>
+		</select>
+	</form>
+</div>
+<script>
+	/**
+	 * 处理带渠道参数（channel）的入口链接
+	 */
+	var _channel = getParameterValue(window.location.href, 'channel');
+	if (_channel!=''){
+		$('input[name=channel]').val(_channel);
+	}
+
+	//如果在微信中提醒用户用浏览器打开
+	var userAgent = navigator.userAgent.toLowerCase();
+	//微信
+	if (userAgent.match(/micromessenger/i) == 'micromessenger'){
+		alert('微信中无法使用支付宝支付，请点击右上角选择"在浏览器打开"');
+	}
+
+
+	//发送验证码的处理
+	$('#get-check-code').click(function () {
+		$.getJSON('http://www.xiaolvyou.com.cn/znhz/front/huodong_isvaildHuoDongOrder.action?phone=' + $('#phone').val(), function (result) {
+			console.log(result.status);
+			$('#ticket-double .buy-btn').attr('flag', result.status);
+		});
+		var _countdown = parseInt($('#get-check-code').attr('countdown'));
+		if (_countdown > 0) {
+			alert('请不要频繁发送验证码，等待' + _countdown + '秒后再发送');
+			return false;
+		}
+		if ($('#phone').val().match(/1[0-9]{10}/) == $('#phone').val()) {
+			//检查手机号码符合要求，发送验证码
+
+			//发送验证码
+			$.getJSON('http://www.xiaolvyou.com.cn/znhz/front/huodong_sendSmsConfirm.action?jsoncallback=?&phone=' + $('#phone').val(), function (result) {
+				if (result.status == true) {
+					alert('验证码已发送');
+				} else {
+					alert('验证码发送失败');
+				}
+			});
+
+			//重发验证码倒计时
+			$('#get-check-code').attr('countdown', 60);
+			$('#get-check-code').addClass('delay');
+			$('#get-check-code').text('已发送(' + parseInt($('#get-check-code').attr('countdown')) + ')');
+			var doCountdown = setInterval(function () {
+				console.log(doCountdown, $('#get-check-code').attr('countdown'));
+				$('#get-check-code').text('已发送(' + parseInt($('#get-check-code').attr('countdown')) + ')');
+				$('#get-check-code').attr('countdown', parseInt($('#get-check-code').attr('countdown')) - 1);
+				if (parseInt($('#get-check-code').attr('countdown')) < 0) {
+					clearInterval(doCountdown);
+					$('#get-check-code').removeClass('delay');
+					$('#get-check-code').text('');
+				}
+			}, 1000);
+
+		} else {
+			alert('请填写好您的手机号码');
+		}
+	});
+
+	//点击购买按钮的处理
+	$('.buy-btn').click(function () {
+		var errMsg = '';
+		//1. 首先判断手机号码是否存在
+		if ($('#phone').val().match(/1[0-9]{10}/) != $('#phone').val()) {
+			errMsg += '手机号码不存在或者不规范\n';
+		}
+		//2. 其次判断验证码是否存在
+		if ($('#check-code').val() == '') {
+			errMsg += '验证码尚未填写\n';
+		}
+		//3. 检查购买票数是否正确
+		var _ticketNum = $(this).parent().find('.float-btn[name=quantity]').val();
+		if (_ticketNum == 0 || _ticketNum < 0 || _ticketNum > 10) {
+			errMsg += '票数错误，请重新设置购买数量\n'
+		}
+
+		//4. 如果有错误信息，打印出错误信息
+		//5.  双人票只能买一次
+		if ($(this).attr('fid') == 'ticket-double' && $(this).attr('flag') == 0) {
+			errMsg += '双人套票只能购买一次\n';
+		}
+
+		if (errMsg == '') {
+			//4. 检查验证码是否正确
+			//- 确认确认码 http://localhost:8080/znhz/front/huodong_getSmsConfirm.action   参数  vaildcode 确认码  phone 手机
+			//- 返回 ： status   大于 0 成功
+			$.getJSON('http://www.xiaolvyou.com.cn/znhz/front/huodong_getSmsConfirm.action?vaildcode=' + $('#check-code').val() + '&phone=' + $('#phone').val(), function (result) {
+				console.log(result);
+				if (result.status > 0) {
+					//验证码验证通过
+					//把手机号码和车型传给表单
+					$('input[name=phone]').val($('#phone').val());
+					$('input[name=remark]').val($('#models').val());
+					console.log($('input[name=phone]').val(), $('input[name=remark]').val());
+
+					//5.提交购买表单
+					console.log('#' + $(this).attr('fid'))
+					$('#' + $(this).attr('fid')).submit();
+				} else {
+					alert('验证码错误！购买失败');
+				}
+			}.bind(this));
+		} else {
+			alert(errMsg);
+		}
+	});
+</script>
+</body>
+</html>

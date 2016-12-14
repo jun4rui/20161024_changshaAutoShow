@@ -186,7 +186,8 @@
 						}
 
 						//把二维码显示出来
-						$('#main-section').append('<div class="QR-code"><img src="http://www.xiaolvyou.com.cn/znhz/front/qr_codeImage.action?code_url='+unit.address+'" alt=""><span>'+unit.miaoshaname+' '+ticketInfo+'</span></div>');
+						//$('#main-section').append('<div class="QR-code"><img src="http://www.xiaolvyou.com.cn/znhz/front/qr_codeImage.action?code_url='+unit.address+'" alt=""><span>'+unit.miaoshaname+' '+ticketInfo+'</span></div>');
+						$('#main-section').append('<div class="QR-code"><img src="http://www.xiaolvyou.com.cn/znhz/front/qr_codeImage.action?code_url='+unit.address+'" alt=""><span>'+unit.miaoshaname+' 12月13日-12月18日</span></div>');
 						$('#thanks').show();
 						console.log(/*名字*/unit.miaoshaname,/*账单ID*/unit.sys_show_order_id, /*对应手机号码*/unit.phone, /*状态*/unit.paystatedes, /*数量*/unit.dispatchtype);
 					});
